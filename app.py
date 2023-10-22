@@ -2,16 +2,19 @@ import streamlit as st
 from textblob import TextBlob
 import requests
 from bs4 import BeautifulSoup
-from database.db_setup import create_tables
+# from database.db_setup import create_tables
 import sqlite3
 from registration import registration_page
+import sqlalchemy
 
-# Ensure tables are created at startup
-create_tables()
+
+#
+# # Ensure tables are created at startup
+# create_tables()
 
 
 def add_userdata(username, password):
-    conn = sqlite3.connect('database/db.sqlite3')
+    conn = sqlite3.connect('database/DSC580-Luis.sqlite3')
     c = conn.cursor()
     c.execute('INSERT INTO users(username,password) VALUES (?,?)', (username, password))
     conn.commit()
@@ -21,11 +24,20 @@ def add_userdata(username, password):
 def main():
     st.title("Multi-Page App")
 
+    conn = st.experimental_connection('DSC580-Luis', type='sql')
+
+    with conn.session as s:
+        c = s.execute('SELECT * FROM users')
+
+        # print all the rows
+        for row in c:
+            print(row)
+
     # Check if the user is already registered (using session state)
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
 
-    registration_page()
+    # registration_page()
 
     # Welcome Page
     if st.session_state['logged_in']:

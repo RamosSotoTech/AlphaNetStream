@@ -1,0 +1,41 @@
+--
+-- File generated with SQLiteStudio v3.4.4 on Sun Oct 22 17:11:46 2023
+--
+-- Text encoding used: UTF-8
+--
+PRAGMA foreign_keys = off;
+BEGIN TRANSACTION;
+
+-- Table: Report
+CREATE TABLE IF NOT EXISTS Report (
+    ReportID      INTEGER     PRIMARY KEY
+                              UNIQUE
+                              NOT NULL,
+    UserID        INTEGER     REFERENCES User (UserID) 
+                              NOT NULL,
+    GeneratedDate TEXT (30)   NOT NULL,
+    Content       BLOB (2000) NOT NULL,
+    Password      TEXT (200) 
+);
+
+INSERT INTO Report (ReportID, UserID, GeneratedDate, Content, Password) VALUES (1, 2, '10/22/2023', 'Working', NULL);
+INSERT INTO Report (ReportID, UserID, GeneratedDate, Content, Password) VALUES (2, 1, '09/22/2023', 'KLWHEJok', NULL);
+INSERT INTO Report (ReportID, UserID, GeneratedDate, Content, Password) VALUES (3, 2, '10/21/2023', 'd;kjf;lk', NULL);
+
+-- Table: User
+CREATE TABLE IF NOT EXISTS User (
+    UserID      INTEGER    PRIMARY KEY
+                           UNIQUE
+                           NOT NULL,
+    Username    TEXT (20)  UNIQUE
+                           NOT NULL,
+    Preferences TEXT (200),
+    Password    TEXT (200) NOT NULL
+);
+
+INSERT INTO User (UserID, Username, Preferences, Password) VALUES (1, 'Raul', 'Streamlit', '1234');
+INSERT INTO User (UserID, Username, Preferences, Password) VALUES (2, 'Luis', 'SQL, C++', '123');
+INSERT INTO User (UserID, Username, Preferences, Password) VALUES (3, 'Javier', 'History', '12345');
+
+COMMIT TRANSACTION;
+PRAGMA foreign_keys = on;

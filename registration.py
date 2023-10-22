@@ -8,12 +8,12 @@ def make_hashes(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
 
 
-def add_userdata(username, password):
-    # Todo: Ensure that the username is unique
-    conn = sqlite3.connect('database/db.sqlite3')
-    c = conn.cursor()
-    c.execute('INSERT INTO users(username,password) VALUES (?,?)', (username, password))
-    conn.commit()
+# def add_userdata(username, password):
+#     # Todo: Ensure that the username is unique
+#     # conn = sqlite3.connect('database/db.sqlite3')
+#     c = conn.cursor()
+#     c.execute('INSERT INTO users(username,password) VALUES (?,?)', (username, password))
+#     conn.commit()
 
 
 def check_hashes(password, hashed_pswd):
@@ -22,22 +22,29 @@ def check_hashes(password, hashed_pswd):
     return False
 
 
-def view_all_users():
-    conn = sqlite3.connect('database/db.sqlite3')
-    c = conn.cursor()
-    c.execute('SELECT * FROM users')
-    data = c.fetchall()
-    conn.close()
-    return data
+# def view_all_users():
+#     conn = sqlite3.connect('database/db.sqlite3')
+#     c = conn.cursor()
+#     c.execute('SELECT * FROM users')
+#     data = c.fetchall()
+#     conn.close()
+#     return data
 
 
 def check_credentials(username, password):
-    conn = sqlite3.connect('database/db.sqlite3')
-    c = conn.cursor()
-    c.execute('SELECT password FROM users WHERE username = ?', (username,))
-    hashed_password = c.fetchone()
-    conn.close()
-    return check_hashes(password, hashed_password[0])
+    conn = st.experimental_connection('DSC580-Luis.db', type='sql')
+
+    # Insert some data with conn.session.
+    with conn.session as s:
+        c = s.execute('SELECT * FROM users')
+
+        # print all the rows
+        for row in c:
+            print(row)
+
+        hashed_password = c.fetchone()
+        conn.close()
+        return check_hashes(password, hashed_password[0])
 
 
 def registration_page():

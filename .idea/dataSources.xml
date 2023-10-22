@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:sqlite:C:\Users\PC\PycharmProjects\AlphaNetStream\database\db.sqlite3</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="DSC580-Luis" uuid="ce549b95-4f73-434a-8dfd-570a5924f158">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\PC\PycharmProjects\AlphaNetStream\database\DSC580-Luis.sqlite3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
