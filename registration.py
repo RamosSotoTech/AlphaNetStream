@@ -1,19 +1,27 @@
-import pandas as pd
 import streamlit as st
 import hashlib
-import sqlite3
 
 
 def make_hashes(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
 
 
-# def add_userdata(username, password):
-#     # Todo: Ensure that the username is unique
-#     # conn = sqlite3.connect('database/db.sqlite3')
-#     c = conn.cursor()
-#     c.execute('INSERT INTO users(username,password) VALUES (?,?)', (username, password))
-#     conn.commit()
+def username_exists(username):
+    with st.experimental_connection("db", type="sql").session as s:
+        query = s.execute('SELECT 1 FROM User WHERE Username = :username', {'username': username})
+        result = query.fetchone()
+        return result is not None
+
+
+def add_userdata(username, password):
+    # Todo: Ensure that the username is unique
+    if username_exists(username):
+        st.error("Username already exists. Please choose a different username.")
+    else:
+        with st.experimental_connection("db", type="sql").session as s:
+            s.execute('INSERT INTO User(Username,Password) VALUES (:username,:password)', {'username': username, 'password': password})
+            s.commit()
+        st.success("You have successfully created an account")
 
 
 def check_hashes(password, hashed_pswd):
@@ -22,29 +30,25 @@ def check_hashes(password, hashed_pswd):
     return False
 
 
-# def view_all_users():
-#     conn = sqlite3.connect('database/db.sqlite3')
-#     c = conn.cursor()
-#     c.execute('SELECT * FROM users')
-#     data = c.fetchall()
-#     conn.close()
-#     return data
+def view_all_users():
+    with st.experimental_connection("db", type="sql").session as s:
+        query = s.execute('SELECT * FROM User')
+        data = query.fetchall()
+        return data
 
 
 def check_credentials(username, password):
-    conn = st.experimental_connection('DSC580-Luis.db', type='sql')
+    with st.experimental_connection("db", type="sql").session as s:
+        # Query the User table for the specified username
+        query = s.execute(f'SELECT password FROM User WHERE username = :username', {'username': username})
+        result = query.fetchone()
 
-    # Insert some data with conn.session.
-    with conn.session as s:
-        c = s.execute('SELECT * FROM users')
-
-        # print all the rows
-        for row in c:
-            print(row)
-
-        hashed_password = c.fetchone()
-        conn.close()
-        return check_hashes(password, hashed_password[0])
+        if result:
+            hashed_password = result[0]
+            # Use your check_hashes function to validate the password
+            return check_hashes(password, hashed_password)
+        else:
+            return False
 
 
 def registration_page():
