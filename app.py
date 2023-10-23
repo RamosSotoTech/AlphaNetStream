@@ -1,56 +1,31 @@
 import streamlit as st
-from textblob import TextBlob
-import requests
-from bs4 import BeautifulSoup
-# from database.db_setup import create_tables
-import sqlite3
 from registration import registration_page
-import sqlalchemy
+from user_pipeline_app import pipeline_process
 
 conn = st.experimental_connection("db", type="sql")
 
 
-def add_userdata(username, password):
-    with conn.session as s:
-        c = s.cursor()
-        c.execute('INSERT INTO User(Username,Password) VALUES (?,?)', (username, password))
-        s.commit()
+def display_app():
+    username = st.session_state.get('username', 'Guest')
+    st.subheader(f"Welcome to the main app, {username}!")
+    st.button("Next Page", on_click=lambda: st.experimental_set_query_params(page="pipeline"), key="to_pipeline")
 
 
 def main():
-    st.title("Multi-Page App")
+    query_params = st.experimental_get_query_params()
 
-    # Check if the user is already registered (using session state)
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
 
-    registration_page()
+    current_page = query_params.get("page", ["registration"])[0]  # default to "registration" if no page param
 
-    # Welcome Page
-    if st.session_state['logged_in']:
-        st.subheader(f"Welcome {st.session_state['username']}")
-        if st.button("Proceed to URL Input"):
-            st.session_state['page'] = "url_input"
-
-    # URL Input Page
-    if st.session_state.get('page') == "url_input":
-        st.subheader("Enter URL for Analysis")
-        url = st.text_input("URL")
-        if st.button("Analyze"):
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            text = soup.get_text()
-
-            blob = TextBlob(text)
-            sentiment = blob.sentiment.polarity
-            if sentiment > 0:
-                st.write('The sentiment of the webpage is Positive')
-            elif sentiment < 0:
-                st.write('The sentiment of the webpage is Negative')
-            else:
-                st.write('The sentiment of the webpage is Neutral')
-
-            st.write("URL Analysis Results")
+    if current_page == "registration":
+        registration_page()
+    elif current_page == "main":
+        display_app()
+        # todo: welcome_page()
+    elif current_page == "pipeline":
+        pipeline_process()
 
 
 if __name__ == '__main__':
