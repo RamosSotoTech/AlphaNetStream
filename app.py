@@ -1,32 +1,15 @@
 import streamlit as st
-from registration import registration_page
-from user_pipeline_app import pipeline_process
-
-conn = st.experimental_connection("db", type="sql")
-
-
-def display_app():
-    username = st.session_state.get('username', 'Guest')
-    st.subheader(f"Welcome to the main app, {username}!")
-    st.button("Next Page", on_click=lambda: st.experimental_set_query_params(page="pipeline"), key="to_pipeline")
+from st_pages import show_pages_from_config, add_page_title
+from streamlit_extras.switch_page_button import switch_page
+from utils.streamlit_utils import load_pages
 
 
 def main():
-    query_params = st.experimental_get_query_params()
+    add_page_title()
 
-    if 'logged_in' not in st.session_state:
-        st.session_state['logged_in'] = False
-
-    current_page = query_params.get("page", ["registration"])[0]  # default to "registration" if no page param
-
-    if current_page == "registration":
-        registration_page()
-    elif current_page == "main":
-        display_app()
-        # todo: welcome_page()
-    elif current_page == "pipeline":
-        pipeline_process()
+    switch_page("Welcome")
 
 
 if __name__ == '__main__':
+    load_pages()
     main()

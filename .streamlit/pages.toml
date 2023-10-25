@@ -1,0 +1,19 @@
+[[pages]]
+path = "pages/Welcome.py"
+name = "Welcome"
+icon = ":house:"
+
+[[pages]]
+path = "pages/Pipeline.py"
+name = "Pipeline"
+icon = ":books:"
+
+[[pages]]
+path = "pages/Register.py"
+name = "Register"
+icon = ":clipboard:"
+
+[[pages]]
+path = "pages/Login.py"
+name = "Login"
+icon = ":key:"
