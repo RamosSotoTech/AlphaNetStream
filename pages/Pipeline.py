@@ -3,9 +3,7 @@ import pandas as pd
 import requests
 import io
 from models.Pipeline import Pipeline
-from explore_data import explore_data
-from st_pages import show_pages_from_config, add_page_title
-
+from mitosheet.streamlit.v1 import spreadsheet
 from utils.pipeline_utils import reporting, data_manipulation, exploratory_analysis, visualization
 from utils.streamlit_utils import with_sidebar
 
@@ -26,8 +24,11 @@ def load_data():
     if input_method == "Upload File":
         data_file = st.file_uploader("Upload CSV", type=['csv'])
         if data_file is not None:
+            print('it was not null')
             try:
+                print(data_file)
                 data = pd.read_csv(data_file)
+                print(data)
                 st.session_state.data = data  # Save data to session state
                 st.rerun()  # Rerun the app
             except pd.errors.ParserError:
@@ -76,54 +77,44 @@ def generate_report():
 
 @with_sidebar
 def render():
-    # add_page_title()
-    #
-    # tab1, tab2, tab3, tab4, tab5 = st.tabs(["Load Data", "Explore Data", "Clean Data", "Visualize Data", "Generate "
-    #                                                                                                      "Report"])
-    #
-    # # Load Data Tab
-    # with tab1:
-    #     load_data()
-    #
-    # # Explore Data Tab
-    # with tab2:
-    #     # Assuming st.session_state.data is already loaded with data
-    #     explore_data()
-    #
-    # # Clean Data Tab
-    # with tab3:
-    #     clean_data()
-    #
-    # # Visualize Data Tab
-    # with tab4:
-    #     visualize_data()
-    #
-    # # Generate Report Tab
-    # with tab5:
-    #     generate_report()
-    st.title('Pipeline Constructor')
-
-    file = st.file_uploader('Upload CSV')
-    data = None
-
     if 'data' not in st.session_state:
-        st.session_state['data'] = pd.read_csv('database/economicCalendarSample.csv')
-
-    data = st.session_state['data']
-
-    if st.button('Default Data', key='load_default'):
-        data = pd.read_csv('database/economicCalendarSample.csv')
-        st.write(data.head())
-
-    if file is not None:
-        data = load_data(file)  # Assume load_data is implemented
+        # If not, create a new Pipeline object and store it in the session state
+        st.session_state['data'] = pd.DataFrame()
 
     if 'pipeline' not in st.session_state:
         # If not, create a new Pipeline object and store it in the session state
         st.session_state['pipeline'] = Pipeline()
 
+    st.title('Pipeline Constructor')
+    download_expander = st.sidebar.expander('Download Sample Data', expanded=False)
+    with download_expander:
+        load_data()
+
+        if st.sidebar.button('Default Data', key='load_default'):
+            st.session_state['data'] = pd.read_csv('database/economicCalendarSample.csv')
+
     # Now, always use st.session_state['pipeline'] to refer to the pipeline
     pipeline = st.session_state['pipeline']
+    data = st.session_state['data']
+    if data is not None:
+        print(data)
+        st.write(data.head())
+
+    if data is not None:
+        st.subheader('Coerce Column Data Types')
+        coercion_expander = st.expander('Specify Column Data Types', expanded=False)
+
+        with coercion_expander:
+            # Pass the dataframe to MitoSheet for editing
+            new_dfs, _ = spreadsheet(data, df_names=['data'])
+            # Obtain the edited dataframe
+            edited_data = list(new_dfs.values())[0]
+            st.session_state['data'] = edited_data
+
+        # Button to display data types after editing
+        if st.button('Display Data Types'):
+            dtypes = st.session_state['data'].dtypes
+            st.write('Data types:', dtypes)
 
     st.sidebar.header('Library Selection')
     selected_library = st.sidebar.selectbox(
@@ -185,11 +176,12 @@ def render():
             # For other parameters, show a text input box
             param_info['value'] = st.text_input(f"Enter value for {param_name}", key=param_name)
 
-
     if st.button('Show Visualization'):
         selected_vis_func = selected_vis_info['func']
-        args = [param['value'] for param in selected_vis_info['params'] if 'value' in param]
-        selected_vis_func(*args)  # Assumes the visualization function displays the visualization directly
+        args = [data]  # start args list with the data DataFrame
+        args.extend(
+            [param['value'] for param in selected_vis_info['params'][1:] if 'value' in param])  # add other params
+        st.pyplot(selected_vis_func(*args))  # pass the args list to the selected visualization function
 
     # Run the pipeline and update the containers only when the 'Run Pipeline' button is clicked
     if st.sidebar.button('Run Pipeline', key='run'):

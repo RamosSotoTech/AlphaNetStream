@@ -1,2 +1,5 @@
 
 database
+/__pycache__/
+.idea
+.env

@@ -29,6 +29,17 @@ def get_page_files(page_names):
     return page_files
 
 
+# allows to switch to a page by name even if it is hidden
+def switch_to(page_name):
+    pages = load_pages()  # Load pages, if necessary
+    page_files = [page for page in pages if page.name == page_name]
+    if page_files:
+        show_pages(page_files)
+        switch_page(page_files[0].name)
+    else:
+        st.error(f"Page {page_name} not found")
+
+
 def create_sidebar():
     with st.sidebar:
         if 'logged_in' in st.session_state and st.session_state['logged_in']:
@@ -56,4 +67,5 @@ def with_sidebar(f):
         show_pages(pages_to_show)
         create_sidebar()
         return f(*args, **kwargs)
+
     return wrapper

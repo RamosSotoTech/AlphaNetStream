@@ -3,6 +3,7 @@ from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_page_title
 from utils.streamlit_utils import with_sidebar
 from utils.db_utils import check_credentials
+from utils.streamlit_utils import show_pages, switch_to
 
 
 @with_sidebar
@@ -10,7 +11,7 @@ def render():
     add_page_title()
 
     if 'logged_in' in st.session_state and st.session_state['logged_in']:
-        switch_page("Pipeline")
+        switch_to("Pipeline")
 
     st.subheader("Login to Your Account")
     username = st.text_input("User Name")
@@ -21,7 +22,7 @@ def render():
             st.session_state['logged_in'] = True
             st.session_state['username'] = username
             st.success("Logged In as {}".format(username))
-            st.experimental_set_query_params(page="Pipeline")
+            switch_to("Pipeline")
         else:
             st.warning("Incorrect Username/Password")
 

@@ -109,49 +109,58 @@ class Visualization:
 def plot_candlestick(data, time_column, title=None):
     df = data.set_index(time_column)
     mpf.plot(df, type='candle', title=title if title else 'Candlestick Chart', volume=True, style='charles')
+    fig = plt.gcf()  # Get the current figure
+    return fig
 
 
 def plot_heatmap(data, time_column, title=None):
     df = data.set_index(time_column)
     sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
     plt.title(title if title else 'Correlation Heatmap')
-    plt.show()
+    fig = plt.gcf()  # Get the current figure
+    return fig
 
 
 def plot_pie(data, value_column, title=None):
-    data[value_column].value_counts().plot(kind='pie', figsize=(5, 5), autopct='%1.1f%%')
-    plt.title(title if title else 'Pie Chart')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(5, 5))
+    data[value_column].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax)
+    ax.set_title(title if title else 'Pie Chart')
+    return fig
 
 
 def plot_bar(data, value_column, title=None):
-    data[value_column].value_counts().plot(kind='bar', figsize=(10, 5))
-    plt.title(title if title else 'Bar Chart')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data[value_column].value_counts().plot(kind='bar', ax=ax)
+    ax.set_title(title if title else 'Bar Chart')
+    return fig
 
 
 def plot_box(data, value_column, title=None):
-    data.boxplot(column=value_column, figsize=(10, 5))
-    plt.title(title if title else 'Box Plot')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data.boxplot(column=value_column, ax=ax)
+    ax.set_title(title if title else 'Box Plot')
+    return fig
 
 
 def plot_scatter(data, x_column, y_column, title=None):
-    data.plot.scatter(x=x_column, y=y_column, figsize=(10, 5))
-    plt.title(title if title else 'Scatter Plot')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data.plot.scatter(x=x_column, y=y_column, ax=ax)
+    ax.set_title(title if title else 'Scatter Plot')
+    return fig
 
 
 def plot_histogram(data, value_column, title=None):
-    data[value_column].hist(figsize=(10, 5))
-    plt.title(title if title else 'Histogram')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data[value_column].hist(ax=ax)
+    ax.set_title(title if title else 'Histogram')
+    return fig
 
 
 def plot_line(data, x_column, y_column, title=None):
-    data.plot.line(x=x_column, y=y_column, figsize=(10, 5))
-    plt.title(title if title else 'Line Plot')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data.plot.line(x=x_column, y=y_column, ax=ax)
+    ax.set_title(title if title else 'Line Plot')
+    return fig
 
 
 def get_function_info(func) -> Dict[str, Any]:

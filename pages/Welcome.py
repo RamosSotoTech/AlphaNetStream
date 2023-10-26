@@ -7,6 +7,7 @@ from utils.streamlit_utils import with_sidebar
 @with_sidebar
 def render():
     add_page_title()
+    st.write("Welcome to the Data Science Pipeline App!")
     col1, col2 = st.columns(2)
 
     with col1:
