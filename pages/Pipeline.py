@@ -6,13 +6,14 @@ from models.Pipeline import Pipeline
 from mitosheet.streamlit.v1 import spreadsheet
 from utils.pipeline_utils import reporting, data_manipulation, exploratory_analysis, visualization
 from utils.streamlit_utils import with_sidebar
+from utils.introspection import get_module_functions_info
 
 # Dictionary to hold libraries
 libraries_dict = {
-    'Data Manipulation': data_manipulation.function_info_dict,
-    'Exploratory Analysis': exploratory_analysis.function_info_dict,
-    'Visualization': visualization.function_info_dict,
-    'Reporting': reporting.function_info_dict
+    'Data Manipulation': get_module_functions_info(data_manipulation),
+    'Exploratory Analysis': get_module_functions_info(exploratory_analysis),
+    'Visualization': get_module_functions_info(visualization),
+    'Reporting': get_module_functions_info(reporting)
 }
 
 

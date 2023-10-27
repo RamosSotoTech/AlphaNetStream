@@ -1,26 +1,50 @@
 # exploratory_analysis.py
-import inspect
-from typing import Dict, Any
+from typing import Union, List
+
+import numpy as np
+import pandas as pd
+from scipy.stats import stats
 
 
-def summarize(data):
+def summarize(data: pd.DataFrame, columns: Union[List[str], None] = None) -> pd.DataFrame:
     """Provide summary statistics."""
-    pass
+    if columns is None:
+        return data.describe()
+    df = data[columns]
+    return df.describe()
 
 
-def find_missing_values(data):
+def find_missing_values(data: pd.DataFrame, columns: Union[List[str], None] = None) -> pd.DataFrame:
     """Identify missing values."""
-    pass
+    if columns is None:
+        return data[data.isnull().any(axis=1)]
+    df = data[columns]
+    return data[df.isnull().any(axis=1)]
 
 
-def correlation_matrix(data):
+def correlation_matrix(data: pd.DataFrame, columns: Union[List[str], None] = None) -> pd.DataFrame:
     """Generate a correlation matrix."""
-    pass
+    if columns is None:
+        return data.corr()
+    df = data[columns]
+    return df.corr()
 
 
-def outlier_detection(data, method='z_score'):
-    """Detect outliers using specified method."""
-    pass
+def outlier_detection(data: pd.DataFrame, columns: Union[List[str], None] = None, method: str = 'iqr') -> pd.DataFrame:
+    """Detect outliers."""
+    if columns is None:
+        return data
+    df = data[columns]
+    if method == 'iqr':
+        q1 = df.quantile(0.25)
+        q3 = df.quantile(0.75)
+        iqr = q3 - q1
+        return df[((df < (q1 - 1.5 * iqr)) | (df > (q3 + 1.5 * iqr))).any(axis=1)]
+    elif method == 'zscore':
+        z = np.abs(stats.zscore(df))
+        return df[(z > 3).any(axis=1)]
+    else:
+        raise ValueError(f'Invalid method: {method}')
 
 
 def descriptive_statistics(data):
@@ -61,23 +85,3 @@ def frequency_analysis(data):
 def cross_tabulation(data):
     """Generate a cross tabulation table."""
     pass
-
-
-def get_function_info(func) -> Dict[str, Any]:
-    sig = inspect.signature(func)
-    params = [{'name': k, 'type': str(v.annotation), 'size': None} for k, v in sig.parameters.items()]
-    return {
-        'func': func,
-        'params': params
-    }
-
-
-# List of functions
-functions = [summarize, find_missing_values, correlation_matrix, outlier_detection, descriptive_statistics,
-             distribution_analysis, pairwise_correlation, trend_analysis, anomaly_detection, feature_importance,
-             frequency_analysis, cross_tabulation]
-
-# Generate function information dictionary
-function_info_dict = {f.__name__: get_function_info(f) for f in functions}
-
-exploration_functions = function_info_dict

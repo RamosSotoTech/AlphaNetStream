@@ -1,8 +1,4 @@
-# data_manipulation.py
-import inspect
-from typing import Dict, Any
-
-
+# data manipulation functions
 def replace_nan(data, value):
     """Replace NaN values with a specified value."""
     pass
@@ -51,22 +47,3 @@ def encoding_categorical(data, columns):
 def decode_categorical(data, columns):
     """Perform categorical decoding."""
     pass
-
-
-def get_function_info(func) -> Dict[str, Any]:
-    sig = inspect.signature(func)
-    params = [{'name': k, 'type': str(v.annotation), 'size': None} for k, v in sig.parameters.items()]
-    return {
-        'func': func,
-        'params': params
-    }
-
-
-# List of functions
-functions = [replace_nan, drop_duplicates, normalize, encode_categorical, impute_missing, feature_engineering,
-             feature_scaling, data_transformation, encoding_categorical, decode_categorical]
-
-# Generate function information dictionary
-function_info_dict = {f.__name__: get_function_info(f) for f in functions}
-
-manipulation_functions = function_info_dict
