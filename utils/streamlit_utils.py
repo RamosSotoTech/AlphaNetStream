@@ -65,6 +65,7 @@ def with_sidebar(f):
         else:
             pages_to_show = get_page_files(all_user_pages)
         show_pages(pages_to_show)
+
         create_sidebar()
         return f(*args, **kwargs)
 
